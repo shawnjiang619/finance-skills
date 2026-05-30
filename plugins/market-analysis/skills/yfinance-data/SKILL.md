@@ -14,6 +14,20 @@ description: >
 
 # yfinance Data Skill
 
+## Data Access — Bloomberg (`xbbg`) first, yfinance fallback
+
+**Prefer the local Bloomberg Terminal via `xbbg`** when it's running (Desktop API on `localhost`, logged in). Use the yfinance library below as the **fallback** when Bloomberg can't answer or the Terminal isn't up.
+
+- **Availability check**: `python -c "from xbbg import blp; print(blp.bdp('AAPL US Equity','PX_LAST'))"` — if it errors, use yfinance.
+- **Conventions**: tickers as `"AAPL US Equity"`. ⚠ pandas 3.x returns **narwhals long-format** — normalize via `.to_native()` first. Mnemonics vary by Terminal config; confirm with `FLDS` if a field errors.
+- **yfinance → xbbg translation**:
+  - `ticker.info` → `bdp` (`PX_LAST`, `CUR_MKT_CAP`, `PE_RATIO`, `HIGH_52WEEK`, `LOW_52WEEK`, ...)
+  - `ticker.history()` → `bdh(ticker, ['PX_LAST','PX_VOLUME'], start, end)`
+  - `ticker.income_stmt` / `balance_sheet` / `cashflow` → `bdh` fundamentals (`SALES_REV_TURN`, `IS_EPS`, `BS_TOT_ASSET`, `CF_FREE_CASH_FLOW`, ...)
+  - `ticker.option_chain` → `bds(ticker,'OPT_CHAIN')` + per-contract `bdp` greeks (⚠ monthlies + LEAPS only, no weeklies)
+  - `ticker.earnings_dates` → `bdp EXPECTED_REPORT_DT` / `LATEST_ANNOUNCEMENT_DT`
+  - `ticker.dividends` → `bdh(ticker,'DVD_HIST_ALL', ...)` / `bdp EQY_DVD_YLD_IND`
+
 Fetches financial and market data from Yahoo Finance using the [yfinance](https://github.com/ranaroussi/yfinance) Python library.
 
 **Important**: yfinance is not affiliated with Yahoo, Inc. Data is for research and educational purposes.

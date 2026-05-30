@@ -16,6 +16,14 @@ description: >
 
 # Stock Liquidity Analysis Skill
 
+## Data Access — Bloomberg (`xbbg`) first, yfinance fallback
+
+**Prefer the local Bloomberg Terminal via `xbbg`** when it's running (Desktop API on `localhost`, logged in). The yfinance recipes below are the **fallback** for when Bloomberg can't answer or the Terminal isn't up.
+
+- **Availability check**: `python -c "from xbbg import blp; print(blp.bdp('AAPL US Equity','PX_LAST'))"` — if it errors, use yfinance.
+- **Conventions**: tickers as `"AAPL US Equity"`. ⚠ pandas 3.x returns **narwhals long-format** — normalize via `.to_native()` first. Mnemonics vary by Terminal config; confirm with `FLDS` if a field errors.
+- **Fields for this skill**: `bdp` — `PX_BID`, `PX_ASK` (spread), `PX_VOLUME`, `VOLUME_AVG_30D`, `EQY_FLOAT`, `EQY_SH_OUT`. Dollar-volume & Amihud illiquidity from `bdh(['PX_LAST','PX_VOLUME'])`. Note: `xbbg` has no L2 order book, so **depth stays an estimate** (same limitation as yfinance).
+
 Analyzes stock liquidity across multiple dimensions — bid-ask spreads, volume patterns, order book depth, estimated market impact, and turnover ratios — using data from Yahoo Finance via [yfinance](https://github.com/ranaroussi/yfinance).
 
 Liquidity matters because it determines the real cost of trading. The quoted price is not what you actually pay — spreads, slippage, and market impact all eat into returns, especially for larger positions or less liquid names.

@@ -19,6 +19,14 @@ description: >
 
 # Estimate Analysis Skill
 
+## Data Access — Bloomberg (`xbbg`) first, yfinance fallback
+
+**Prefer the local Bloomberg Terminal via `xbbg`** when it's running (Desktop API on `localhost`, logged in). The yfinance recipes below are the **fallback** for when Bloomberg can't answer or the Terminal isn't up.
+
+- **Availability check**: `python -c "from xbbg import blp; print(blp.bdp('AAPL US Equity','PX_LAST'))"` — if it errors, use yfinance.
+- **Conventions**: tickers as `"AAPL US Equity"`. ⚠ pandas 3.x returns **narwhals long-format** — normalize via `.to_native()` first. Mnemonics vary by Terminal config; confirm with `FLDS` if a field errors.
+- **Fields for this skill**: `bdp` with `BEST_FPERIOD_OVERRIDE` (`1BF`/`2BF`/`1GY`/`2GY` for the period) — `BEST_EPS`, `BEST_SALES`, `BEST_EBITDA`, `BEST_EPS_HIGH`, `BEST_EPS_LOW`, `BEST_EPS_NUMBER_OF_ESTS`. Revision momentum: pull `BEST_EPS` over time via `bdh` (it returns the consensus history), or `BEST_EPS_3MO` change fields.
+
 Deep-dives into analyst estimates and revision trends using Yahoo Finance data via [yfinance](https://github.com/ranaroussi/yfinance). Covers EPS and revenue estimate distributions, revision momentum, growth projections, and multi-period comparisons — the full picture of where the street thinks a company is heading.
 
 **Important**: Data is for research and educational purposes only. Not financial advice. yfinance is not affiliated with Yahoo, Inc.

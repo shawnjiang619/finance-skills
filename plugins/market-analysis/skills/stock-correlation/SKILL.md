@@ -18,6 +18,14 @@ description: >
 
 # Stock Correlation Analysis Skill
 
+## Data Access — Bloomberg (`xbbg`) first, yfinance fallback
+
+**Prefer the local Bloomberg Terminal via `xbbg`** when it's running (Desktop API on `localhost`, logged in). The yfinance recipes below are the **fallback** for when Bloomberg can't answer or the Terminal isn't up.
+
+- **Availability check**: `python -c "from xbbg import blp; print(blp.bdp('NVDA US Equity','PX_LAST'))"` — if it errors, use yfinance.
+- **Conventions**: tickers as `"NVDA US Equity"`. ⚠ pandas 3.x returns **narwhals long-format** — normalize via `.to_native()` first.
+- **Fields for this skill**: return series via `bdh(['NVDA US Equity','AMD US Equity', ...], 'PX_LAST', start, end)` → pct-change → `.corr()` for the matrix; rolling corr from the same frame. Beta via `bdp EQY_BETA`. Peer discovery: sector via `bds('NVDA US Equity','BICS_LEVEL_4_INDUSTRY_NAME')` or a user-supplied basket.
+
 Finds and analyzes correlated stocks using historical price data from Yahoo Finance via [yfinance](https://github.com/ranaroussi/yfinance). Routes to specialized sub-skills based on user intent.
 
 **Important**: This is for research and educational purposes only. Not financial advice. yfinance is not affiliated with Yahoo, Inc.

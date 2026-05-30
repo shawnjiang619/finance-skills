@@ -13,6 +13,14 @@ description: >
 
 # Options Payoff Curve Skill
 
+## Data Access — Bloomberg (`xbbg`) first, yfinance fallback
+
+When you need **live prices to seed the curve** (spot, option bid/ask, IV, greeks), **prefer the local Bloomberg Terminal via `xbbg`** if it's running (Desktop API on `localhost`, logged in); otherwise fall back to yfinance or the user-supplied numbers.
+
+- **Availability check**: `python -c "from xbbg import blp; print(blp.bdp('AAPL US Equity','PX_LAST'))"` — if it errors, use yfinance / user inputs.
+- **Conventions**: tickers as `"AAPL US Equity"`. ⚠ pandas 3.x returns **narwhals long-format** — normalize via `.to_native()` first.
+- **Fields for this skill**: spot via `bdp PX_LAST`; chain via `bds('AAPL US Equity','OPT_CHAIN')` then per-contract `bdp` `PX_BID`/`PX_ASK`/`IVOL_MID`/`DELTA_MID`/`OPEN_INT`; or one-shot `python C:\blp\data\bbg_trade.py snapshot AAPL`. ⚠ Bloomberg `OPT_CHAIN` returns **monthlies + LEAPS only, no weeklies**.
+
 Generates a fully interactive HTML widget (via `visualize:show_widget`) showing:
 - **Expiry payoff curve** (dashed gray line) — intrinsic value at expiration
 - **Theoretical value curve** (solid colored line) — Black-Scholes price at current DTE/IV

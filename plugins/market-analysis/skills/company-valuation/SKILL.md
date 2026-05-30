@@ -17,6 +17,14 @@ description: >
 
 # Company Valuation
 
+## Data Access — Bloomberg (`xbbg`) first, yfinance fallback
+
+**Prefer the local Bloomberg Terminal via `xbbg`** when it's running (Desktop API on `localhost`, logged in). The yfinance recipes below are the **fallback** for when Bloomberg can't answer or the Terminal isn't up.
+
+- **Availability check**: `python -c "from xbbg import blp; print(blp.bdp('AAPL US Equity','PX_LAST'))"` — if it errors, use yfinance.
+- **Conventions**: tickers as `"AAPL US Equity"`. ⚠ pandas 3.x returns **narwhals long-format** — normalize via `.to_native()` first. Mnemonics vary by Terminal config; confirm with `FLDS` if a field errors.
+- **Fields for this skill**: `bdp` — `CUR_MKT_CAP`, `BEST_TARGET_PRICE`, `PE_RATIO`, `CURRENT_EV_TO_T12M_EBITDA`, `BEST_EV_TO_BEST_EBITDA`, `CURRENT_EV_TO_T12M_SALES`, `WACC`, `EQY_BETA`, `NET_DEBT`, `BS_SH_OUT`. FCF / financials history via `bdh` — `SALES_REV_TURN`, `EBITDA`, `CF_FREE_CASH_FLOW`, `IS_EPS`. For **comps**, pull the EV/EBITDA + EV/Sales fields across the whole peer set in one `bdp(['A US Equity', 'B US Equity', ...], [...])` call.
+
 Triangulates intrinsic value via three methods, then blends them to an implied share price:
 
 1. **DCF** — 5-year FCFF projection, discount at WACC, terminal value.

@@ -15,6 +15,14 @@ description: >
 
 # SEPA Strategy Analysis
 
+## Data Access — Bloomberg (`xbbg`) first, yfinance fallback
+
+**Prefer the local Bloomberg Terminal via `xbbg`** when it's running (Desktop API on `localhost`, logged in). The yfinance recipes below are the **fallback** for when Bloomberg can't answer or the Terminal isn't up.
+
+- **Availability check**: `python -c "from xbbg import blp; print(blp.bdp('AAPL US Equity','PX_LAST'))"` — if it errors, use yfinance.
+- **Conventions**: tickers as `"AAPL US Equity"`. ⚠ pandas 3.x returns **narwhals long-format** — normalize via `.to_native()` first. Mnemonics vary by Terminal config; confirm with `FLDS` if a field errors.
+- **Fields for this skill**: price/volume series via `bdh('AAPL US Equity', ['PX_LAST','PX_VOLUME'], start, end)`. Trend template via `bdp` — `MOV_AVG_50D`, `MOV_AVG_100D`, `MOV_AVG_200D`, `HIGH_52WEEK`, `LOW_52WEEK`. (150-day MA: compute from the `bdh` series — there's no direct 150D field.)
+
 Analyze stocks using Mark Minervini's SEPA (Specific Entry Point Analysis) framework — a complete system for identifying high-probability growth stock entries with strict risk management.
 
 **Core philosophy:** Buy the right stock, in the right stage, at a precise entry point, with strict risk controls. Win rate is ~50-55% — profitability comes from asymmetric risk/reward (small losses, large gains), not from predicting direction.

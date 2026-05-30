@@ -13,6 +13,14 @@ description: >
 
 # SaaS Valuation Compression Analyzer
 
+## Data Access — Bloomberg (`xbbg`) first, yfinance fallback
+
+⚠ **Private-round valuations and ARR are NOT in Bloomberg** (or yfinance) — take those from the user, press releases, or PitchBook-style inputs as before. Bloomberg only helps the **public-comp anchor**:
+
+- **Availability check**: `python -c "from xbbg import blp; print(blp.bdp('CRM US Equity','PX_LAST'))"` — if it errors, skip the comp pull.
+- **Conventions**: tickers as `"CRM US Equity"`. ⚠ pandas 3.x returns **narwhals long-format** — normalize via `.to_native()` first.
+- **Fields for this skill**: public SaaS-comp multiples via `bdp(['CRM US Equity','NOW US Equity', ...], ['CURRENT_EV_TO_T12M_SALES','BEST_EV_TO_BEST_SALES','CUR_MKT_CAP'])` to benchmark the private round's ARR multiple against listed peers.
+
 ## What This Skill Does
 
 For a given SaaS company, research its funding history and compute ARR-based valuation

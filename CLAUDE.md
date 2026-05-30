@@ -19,7 +19,7 @@ Skills are organized into plugin groups by usage; opencli plugins are separate N
 .claude-plugin/
   marketplace.json        # Marketplace definition — lists all 6 plugins
 plugins/
-  market-analysis/        # Stock analysis, earnings, correlations, options via yfinance
+  market-analysis/        # Stock analysis, earnings, correlations, options via Bloomberg/xbbg (yfinance fallback)
     plugin.json           # Plugin manifest for this group
     skills/
       <skill-name>/
@@ -134,7 +134,7 @@ This repo ships as a Claude Code plugin marketplace containing 6 plugins:
 
 | Plugin | Description |
 |---|---|
-| `finance-market-analysis` | Stock analysis, earnings, correlations, options via yfinance |
+| `finance-market-analysis` | Stock analysis, earnings, correlations, options via Bloomberg/xbbg (yfinance fallback) |
 | `finance-social-readers` | Social media research feeds (Twitter, Discord, LinkedIn, Telegram, YC) |
 | `finance-data-providers` | External API data (Adanos, Funda AI, Hormuz Strait) |
 | `finance-startup-tools` | Startup analysis frameworks |

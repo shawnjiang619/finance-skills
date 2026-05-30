@@ -16,6 +16,14 @@ description: >
 
 # ETF Premium/Discount Analysis Skill
 
+## Data Access — Bloomberg (`xbbg`) first, yfinance fallback
+
+**Prefer the local Bloomberg Terminal via `xbbg`** when it's running (Desktop API on `localhost`, logged in). The yfinance recipes below are the **fallback** for when Bloomberg can't answer or the Terminal isn't up.
+
+- **Availability check**: `python -c "from xbbg import blp; print(blp.bdp('SPY US Equity','PX_LAST'))"` — if it errors, use yfinance.
+- **Conventions**: tickers as `"SPY US Equity"`. ⚠ pandas 3.x returns **narwhals long-format** — normalize via `.to_native()` first. Mnemonics vary by Terminal config; confirm with `FLDS` if a field errors.
+- **Fields for this skill**: `bdp` — `FUND_NET_ASSET_VAL`, `FUND_MKT_PX_TO_NAV` (premium/discount %, signed), `FUND_TOTAL_ASSETS_ETF`, `PX_LAST`. For the **dealer-gamma / GEX decomposition** of a surge, run `python C:\blp\data\bbg_trade.py gex SPY` (or `snapshot`).
+
 Calculates the premium or discount of an ETF's market price relative to its Net Asset Value (NAV) using data from Yahoo Finance via [yfinance](https://github.com/ranaroussi/yfinance).
 
 **Why this matters:** An ETF's market price can diverge from the value of its underlying holdings (NAV). When you buy at a premium, you're overpaying relative to the assets; at a discount, you're getting a bargain. This divergence is typically small for liquid US equity ETFs but can be significant for bond ETFs, international ETFs, leveraged/inverse products, and crypto ETFs — especially during periods of market stress.
